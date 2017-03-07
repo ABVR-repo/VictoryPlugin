@@ -1,6 +1,7 @@
 /*
 	By Rama
 */
+#include "VictoryBPLibrary.h"
 #include "VictoryBPLibraryPrivatePCH.h"
 
 #define LOCTEXT_NAMESPACE "FVictoryBPLibraryModule"

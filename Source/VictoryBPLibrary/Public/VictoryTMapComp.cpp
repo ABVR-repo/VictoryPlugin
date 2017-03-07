@@ -4,8 +4,8 @@
 
 */
 
-#include "VictoryBPLibraryPrivatePCH.h"
 #include "VictoryTMapComp.h"
+#include "VictoryBPLibraryPrivatePCH.h"
  
 DEFINE_LOG_CATEGORY(VictoryTMapLog)
 

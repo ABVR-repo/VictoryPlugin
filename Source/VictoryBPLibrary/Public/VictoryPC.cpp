@@ -4,8 +4,8 @@
 
 */
 
-#include "VictoryBPLibraryPrivatePCH.h"
 #include "VictoryPC.h"
+#include "VictoryBPLibraryPrivatePCH.h"
  
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 

@@ -3,8 +3,8 @@
 	By Rama
 
 */
-#include "VictoryBPLibraryPrivatePCH.h"
 #include "VictoryISM.h"
+#include "VictoryBPLibraryPrivatePCH.h"
 
 //////////////////////////////////////////////////////////////////////////
 // VictoryISM

@@ -1,9 +1,9 @@
 /*
 	By TK-Master
 */
+#include "TKMathFunctionLibrary.h"
 #include "VictoryBPLibraryPrivatePCH.h"
 
-#include "TKMathFunctionLibrary.h"
  
 #include "StaticMeshResources.h"
 

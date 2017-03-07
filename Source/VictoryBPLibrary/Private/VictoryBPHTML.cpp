@@ -1,8 +1,8 @@
 /*
 	By Rama
 */
-#include "VictoryBPLibraryPrivatePCH.h"
 #include "VictoryBPHTML.h"
+#include "VictoryBPLibraryPrivatePCH.h"
 
 #if PLATFORM_HTML5_BROWSER
 	#include "SDL_opengl.h"

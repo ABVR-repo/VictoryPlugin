@@ -36,8 +36,8 @@
 
 //Kris Nodes
 #include "ImageUtils.h"
-#include "ImageWrapper.h"	//requires "ImageWrapper" in public dependencies in build CS
-   
+#include "Runtime/ImageWrapper/Public/ImageWrapper.h"	//requires "ImageWrapper" in public dependencies in build CS
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include "VictoryBPFunctionLibrary.generated.h"
@@ -62,7 +62,7 @@ enum class EJoyImageFormats : uint8
 	BMP		UMETA(DisplayName="BMP        "),
 	ICO		UMETA(DisplayName="ICO        "),
 	EXR		UMETA(DisplayName="EXR        "),
-	ICNS		UMETA(DisplayName="ICNS        ")
+	ICNS	UMETA(DisplayName="ICNS        ")
 };
 
 UENUM(BlueprintType)
@@ -1732,7 +1732,6 @@ static void SetBloomIntensity(APostProcessVolume* PostProcessVolume,float Intens
 
 //~~~ Kris ~~~
 
-<<<<<<< HEAD
 	/* 
 	 *See if index is a valid index for this array
 	 *    
@@ -1742,17 +1741,6 @@ static void SetBloomIntensity(APostProcessVolume* PostProcessVolume,float Intens
 	*/
 	UFUNCTION(Category="VictoryBPLibrary|Utilities|Array", BlueprintPure, CustomThunk, meta=(DisplayName = "Valid Index", CompactNodeTitle = "VALID INDEX", ArrayParm = "TargetArray"))
 	static bool Array_IsValidIndex(const TArray<int32>& TargetArray, int32 Index);
-=======
-/* 
- *See if index is a valid index for this array
- *    
- *@param    TargetArray        The array to perform the operation on
- *@param    Index            The index to check.
- *@return    Bool if integer is valid index for this array
-*/
-UFUNCTION(Category="Victory BP Library|Utilities|Array", BlueprintPure, CustomThunk, meta=(DisplayName = "Valid Index", CompactNodeTitle = "VALID INDEX", ArrayParm = "TargetArray"))
-static bool Array_IsValidIndex(const TArray<int32>& TargetArray, int32 Index);
->>>>>>> a0373028600db9be19dcba75ace78574b0b5334d
 
 	static bool GenericArray_IsValidIndex(void* TargetArray, const UArrayProperty* ArrayProp, int32 Index);
 	  
@@ -1774,7 +1762,6 @@ static bool Array_IsValidIndex(const TArray<int32>& TargetArray, int32 Index);
 		*(bool*)RESULT_PARAM = WasValid;
 	}
 
-<<<<<<< HEAD
 	/** Get the time target actor was created. */
 	UFUNCTION(Category = "VictoryBPLibrary|Actor", BlueprintPure, Meta = (DefaultToSelf = "Target"))
 	static float GetCreationTime(const AActor* Target);
@@ -1790,23 +1777,6 @@ static bool Array_IsValidIndex(const TArray<int32>& TargetArray, int32 Index);
 	/** Contributed by Community Member Kris! */
 	UFUNCTION(Category = "VictoryBPLibrary|SceneCapture", BlueprintPure, Meta = (DefaultToSelf = "Target"))
 	static bool Capture2D_Project(class ASceneCapture2D* Target, FVector Location, FVector2D& OutPixelLocation);
-=======
-/** Get the time target actor was created. */
-UFUNCTION(Category = "Victory BP Library|Actor", BlueprintPure, Meta = (DefaultToSelf = "Target"))
-static float GetCreationTime(const AActor* Target);
-
-/** Get the time target actor has been alive. */
-UFUNCTION(Category = "Victory BP Library|Actor", BlueprintPure, Meta = (DefaultToSelf = "Target"))
-static float GetTimeAlive(const AActor* Target);
-	
-/** Contributed by Community Member Kris! */
-UFUNCTION(Category = "Victory BP Library|SceneCapture", BlueprintPure)
-static bool CaptureComponent2D_Project(class USceneCaptureComponent2D* Target, FVector Location, FVector2D& OutPixelLocation);
-  
-/** Contributed by Community Member Kris! */
-UFUNCTION(Category = "Victory BP Library|SceneCapture", BlueprintPure, Meta = (DefaultToSelf = "Target"))
-static bool Capture2D_Project(class ASceneCapture2D* Target, FVector Location, FVector2D& OutPixelLocation);
->>>>>>> a0373028600db9be19dcba75ace78574b0b5334d
      
 	/** Make sure to include the appropriate image extension in your file path! Recommended: .bmp, .jpg, .png. Contributed by Community Member Kris! */
 	UFUNCTION(Category = "Victory BP Library|SceneCapture", BlueprintCallable)

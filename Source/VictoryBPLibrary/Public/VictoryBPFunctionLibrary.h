@@ -1552,6 +1552,9 @@ class VICTORYBPLIBRARY_API UVictoryBPFunctionLibrary : public UBlueprintFunction
 	UFUNCTION(BlueprintCallable, Category = "Victory BP Library|Load Texture From File",meta=(Keywords="create image png jpg jpeg bmp bitmap ico icon exr icns"))
 	static bool Victory_GetPixelsArrayFromT2D(UTexture2D* T2D, int32& TextureWidth, int32& TextureHeight,TArray<FLinearColor>& PixelArray);
 	
+	/** This will modify the original T2D to remove sRGB and change compression to VectorDisplacementMap to ensure accurate pixel reading. -Rama*/
+	//UFUNCTION(BlueprintCallable, Category = "Victory BP Library|Load Texture From File",meta=(Keywords="create image png jpg jpeg bmp bitmap ico icon exr icns"))
+	static bool Victory_GetPixelsArrayFromT2DDynamic(UTexture2DDynamic* T2D, int32& TextureWidth, int32& TextureHeight,TArray<FLinearColor>& PixelArray);
 	  
 	/** Contributed by UE4 forum member n00854180t! Plays a .ogg sound from file, attached to and following the specified component. This is a fire and forget sound. Replication is also not handled at this point.
 	* @param FilePath - Path to sound file to play
@@ -1777,7 +1780,6 @@ static void SetBloomIntensity(APostProcessVolume* PostProcessVolume,float Intens
 	/** Contributed by Community Member Kris! */
 	UFUNCTION(Category = "VictoryBPLibrary|SceneCapture", BlueprintPure, Meta = (DefaultToSelf = "Target"))
 	static bool Capture2D_Project(class ASceneCapture2D* Target, FVector Location, FVector2D& OutPixelLocation);
-     
 	/** Make sure to include the appropriate image extension in your file path! Recommended: .bmp, .jpg, .png. Contributed by Community Member Kris! */
 	UFUNCTION(Category = "Victory BP Library|SceneCapture", BlueprintCallable)
 	static bool CaptureComponent2D_SaveImage(class USceneCaptureComponent2D* Target, const FString ImagePath, const FLinearColor ClearColour);
@@ -1829,6 +1831,21 @@ static void SetBloomIntensity(APostProcessVolume* PostProcessVolume,float Intens
 
 	UFUNCTION(Category = "LevelStreaming", BlueprintCallable, Meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
 	static void AddToStreamingLevels(UObject* WorldContextObject, const FLevelStreamInstanceInfo& LevelInstanceInfo);
+	
+	UFUNCTION(Category = "LevelStreaming", BlueprintCallable, Meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
+	static void RemoveFromStreamingLevels(UObject* WorldContextObject, const FLevelStreamInstanceInfo& LevelInstanceInfo);
+
+	UFUNCTION(Category = "LevelStreaming", BlueprintCallable, Meta = (keywords="remove"))
+	static void HideStreamingLevel(ULevelStreamingKismet* LevelInstance)
+	{
+		if(LevelInstance) LevelInstance->bShouldBeVisible = false;
+	}
+	 
+	UFUNCTION(Category = "LevelStreaming", BlueprintCallable, Meta = (keywords="remove"))
+	static void UnloadStreamingLevel(ULevelStreamingKismet* LevelInstance)
+	{
+		if(LevelInstance) LevelInstance->bShouldBeLoaded = false;
+	}
 	
 	static bool GenericArray_SortCompare(const UProperty* LeftProperty, void* LeftValuePtr, const UProperty* RightProperty, void* RightValuePtr);
 
@@ -1896,7 +1913,7 @@ static void SetBloomIntensity(APostProcessVolume* PostProcessVolume,float Intens
 	 *
 	 * @return True if OutViewportPosition is not 0,0.
 	 */
-	UFUNCTION(Category = "VictoryBPLibrary|Game|Viewport", BlueprintCallable)
+	UFUNCTION(Category = "VictoryBPLibrary|Game|Viewport", BlueprintCallable, meta=(WorldContext="WorldContextObject"))
 	static bool GetViewportPosition(UObject* WorldContextObject, const FVector2D& ScreenPosition, FVector2D& OutViewportPosition);
 
 	/**
@@ -1911,7 +1928,7 @@ static void SetBloomIntensity(APostProcessVolume* PostProcessVolume,float Intens
 	 *
 	 * @return True if there was a hit, false otherwise.
 	 */
-	UFUNCTION(Category = "VictoryBPLibrary|Game|Viewport", BlueprintCallable, Meta = (bTraceComplex = true, TraceChannel = ECC_Visibility))
+	UFUNCTION(Category = "VictoryBPLibrary|Game|Viewport", BlueprintCallable, Meta = (WorldContext="WorldContextObject", bTraceComplex = true, TraceChannel = ECC_Visibility))
 	static bool GetViewportPositionHitResultByChannel(UObject* WorldContextObject, const FVector2D& ViewportPosition, ECollisionChannel TraceChannel, bool bTraceComplex, FHitResult& OutHitResult);
 
 	/**
@@ -1924,7 +1941,7 @@ static void SetBloomIntensity(APostProcessVolume* PostProcessVolume,float Intens
 	 *
 	 * @return false if something went wrong during the deproject process.
 	 */
-	UFUNCTION(Category = "VictoryBPLibrary|Game|Viewport", BlueprintCallable)
+	UFUNCTION(Category = "VictoryBPLibrary|Game|Viewport", BlueprintCallable, Meta = (WorldContext="WorldContextObject"))
 	static bool ViewportPositionDeproject(UObject* WorldContextObject, const FVector2D& ViewportPosition, FVector& OutWorldOrigin, FVector& OutWorldDirection);
 	
 	/**

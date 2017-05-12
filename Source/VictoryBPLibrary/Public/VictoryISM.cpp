@@ -12,7 +12,7 @@
 AVictoryISM::AVictoryISM(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	RootComponent = Mesh = ObjectInitializer.CreateDefaultSubobject<UInstancedStaticMeshComponent>(this, "VictoryInstancedMesh");
+	RootComponent = Mesh = ObjectInitializer.CreateDefaultSubobject<UHierarchicalInstancedStaticMeshComponent>(this, "VictoryInstancedMesh");
 } 
 
 void AVictoryISM::BeginPlay() 

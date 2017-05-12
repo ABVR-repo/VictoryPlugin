@@ -5,7 +5,7 @@
 */
 
 #pragma once
-
+#include "Components/HierarchicalInstancedStaticMeshComponent.h"
 #include "VictoryISM.generated.h"
  
 UCLASS()
@@ -17,7 +17,7 @@ public:
 	AVictoryISM(const FObjectInitializer& ObjectInitializer);
 	  
 	UPROPERTY(Category = "Joy ISM", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	UInstancedStaticMeshComponent* Mesh; 
+	UHierarchicalInstancedStaticMeshComponent* Mesh;
 	
 //~~~~~~~~~~~~~
 //	  ISM

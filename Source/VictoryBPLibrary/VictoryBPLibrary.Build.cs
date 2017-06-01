@@ -4,8 +4,8 @@ using UnrealBuildTool;
 
 public class VictoryBPLibrary : ModuleRules
 {
-	public VictoryBPLibrary(TargetInfo Target)
-	{ 
+	public VictoryBPLibrary(ReadOnlyTargetRules Target) : base(Target)
+    { 
 		//4.15 Include What You Use
 		bEnforceIWYU = false;
 		

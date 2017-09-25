@@ -657,8 +657,12 @@ int32 UVictoryBPFunctionLibrary::GetAllBoneNamesBelowBone( USkeletalMeshComponen
 //~~~~~~ 
 bool UVictoryBPFunctionLibrary::JoyFileIO_GetFiles(TArray<FString>& Files, FString RootFolderFullPath, FString Ext)
 {
-	if(RootFolderFullPath.Len() < 1) return false;
-	
+	if (RootFolderFullPath.Len() < 1)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ROOT FOLDER LEN < 1"));
+		return false;
+	}
+
 	FPaths::NormalizeDirectoryName(RootFolderFullPath);
 	
 	IFileManager& FileManager = IFileManager::Get();
@@ -679,8 +683,10 @@ bool UVictoryBPFunctionLibrary::JoyFileIO_GetFiles(TArray<FString>& Files, FStri
 	
 	if(!FileManager.DirectoryExists(*FinalPath)) 
 	{
+		UE_LOG(LogTemp, Warning, TEXT("DIR DOESN'T EXIST, %s"), *FinalPath);
 		return false;
 	}
+
 	FileManager.FindFiles(Files, *FinalPath, true, false);
 	return true;				  
 }

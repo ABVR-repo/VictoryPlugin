@@ -681,12 +681,6 @@ bool UVictoryBPFunctionLibrary::JoyFileIO_GetFiles(TArray<FString>& Files, FStri
 	
 	FString FinalPath = RootFolderFullPath + "/" + Ext;
 	
-	if(!FileManager.DirectoryExists(*FinalPath)) 
-	{
-		UE_LOG(LogTemp, Warning, TEXT("DIR DOESN'T EXIST, %s"), *FinalPath);
-		return false;
-	}
-
 	FileManager.FindFiles(Files, *FinalPath, true, false);
 	return true;				  
 }

@@ -45,7 +45,7 @@
 #include "PhysicsEngine/BodySetup.h"
 
 #include "DestructibleComponent.h"
-#include "HAL/PlatformApplicationMisc.h
+#include "HAL/PlatformApplicationMisc.h"
 
 
 //Apex issues, can add iOS here  <3 Rama

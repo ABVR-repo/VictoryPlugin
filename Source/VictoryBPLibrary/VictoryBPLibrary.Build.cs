@@ -5,10 +5,10 @@ using UnrealBuildTool;
 public class VictoryBPLibrary : ModuleRules
 {
 	public VictoryBPLibrary(ReadOnlyTargetRules Target) : base(Target)
-    { 
+	{
 		//4.15 Include What You Use
 		bEnforceIWYU = false;
-		
+
 		PublicIncludePaths.AddRange(
 			new string[] {
 				"VictoryBPLibrary/Public"
@@ -16,8 +16,8 @@ public class VictoryBPLibrary : ModuleRules
 				// ... add public include paths required here ...
 			}
 			);
-				
-		
+
+
 		PrivateIncludePaths.AddRange(
 			new string[] {
 				"VictoryBPLibrary/Private",
@@ -25,57 +25,71 @@ public class VictoryBPLibrary : ModuleRules
 				// ... add other private include paths required here ...
 			}
 			);
-			
-		
+
+
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
 				"Core",
-				"ApexDestruction",
 				
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
-			
-		
+
+
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"CoreUObject", 
-				"Engine", 
+				"CoreUObject",
+				"Engine",
 				"InputCore",
-				
+
 				"RHI",
 				"RenderCore",
-				 
+
 				"HTTP",
 				"UMG", "Slate", "SlateCore",
-				
+
 				"ImageWrapper",
-				
-				"PhysX", 
-				
+
+				"PhysX",
+
 				"HeadMountedDisplay",
-  
+
+				"AIModule",
+
+				"ApplicationCore",
+
 			}
 			);
-		
+
 		//APEX EXCLUSIONS
 		if (Target.Platform != UnrealTargetPlatform.Android && Target.Platform != UnrealTargetPlatform.HTML5 && Target.Platform != UnrealTargetPlatform.IOS)
 		{
 			PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"APEX"
+				"APEX",
+
+			}
+			);
+
+			PublicDependencyModuleNames.AddRange(
+			new string[]
+			{
+				"ApexDestruction",
+				
+				// ... add other public dependencies that you statically link with here ...
 			}
 			);
 		}
-	
-		 
+
+
 		DynamicallyLoadedModuleNames.AddRange(
 			new string[]
 			{
 				// ... add any modules that your module loads dynamically here ...
 			}
 			);
+	}
 }

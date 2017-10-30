@@ -2,11 +2,9 @@
 	By Rama
 */
     
-#include "VictoryBPFunctionLibrary.h"
 #include "VictoryBPLibraryPrivatePCH.h"
-
-
  
+#include "VictoryBPFunctionLibrary.h"
 
 //FGPUDriverInfo GPU 
 #include "Runtime/Core/Public/GenericPlatform/GenericPlatformDriver.h"
@@ -47,8 +45,8 @@
 #include "PhysicsEngine/BodySetup.h"
 
 #include "DestructibleComponent.h"
-#include "HAL/PlatformApplicationMisc.h"
-#include "HAL/PlatformProcess.h"
+#include "HAL/PlatformApplicationMisc.h
+
 
 //Apex issues, can add iOS here  <3 Rama
 #if PLATFORM_ANDROID || PLATFORM_HTML5 || PLATFORM_IOS
@@ -564,7 +562,6 @@ bool UVictoryBPFunctionLibrary::VictoryPhysics_UpdateAngularDamping(UPrimitiveCo
 	 
 bool UVictoryBPFunctionLibrary::VictoryDestructible_DestroyChunk(UDestructibleComponent* DestructibleComp, int32 HitItem)
 {   
-	// DISABLED
 	#if WITH_APEX
 	if(!DestructibleComp) 
 	{
@@ -601,8 +598,6 @@ bool UVictoryBPFunctionLibrary::VictoryDestructible_DestroyChunk(UDestructibleCo
 	#endif //WITH_APEX
 	 
 	UE_LOG(LogTemp,Error,TEXT("UVictoryBPFunctionLibrary::VictoryDestructible_DestroyChunk ~ Current Platform does not support APEX"));
-	
-	UE_LOG(LogTemp, Error, TEXT("UVictoryBPFunctionLibrary::VictoryDestructible_DestroyChunk ~ NOT YET UPDATED TO 4.18"));
 	return false;
 }
 
@@ -1679,22 +1674,25 @@ void UVictoryBPFunctionLibrary::VictorySetCustomConfigVar_String(FString Section
 
 EVictoryHMDDevice UVictoryBPFunctionLibrary::GetHeadMountedDisplayDeviceType()
 {
-	if(!GEngine->XRSystem.IsValid() || !GEngine->XRSystem->GetHMDDevice()) return EVictoryHMDDevice::None;
 	 
-	//Actively connected?
-	if(!GEngine->XRSystem->GetHMDDevice()->IsHMDConnected())
+	if (GEngine->XRSystem.IsValid() && GEngine->XRSystem->GetHMDDevice())
 	{  
-		return EVictoryHMDDevice::None;
-	}
+		//Actively connected?
+		if(!GEngine->XRSystem->GetHMDDevice()->IsHMDConnected())
+		{  
+			return EVictoryHMDDevice::None;
+		} 
 		
-	switch (GEngine->XRSystem->GetHMDDevice()->GetHMDDeviceType())
-	{       
-		case EHMDDeviceType::DT_OculusRift 				: return EVictoryHMDDevice::OculusRift;
-		case EHMDDeviceType::DT_Morpheus 				: return EVictoryHMDDevice::Morpheus;
-		case EHMDDeviceType::DT_SteamVR 				: return EVictoryHMDDevice::SteamVR;
-		case EHMDDeviceType::DT_ES2GenericStereoMesh 	: return EVictoryHMDDevice::ES2GenericStereoMesh;
-		case EHMDDeviceType::DT_GearVR 					: return EVictoryHMDDevice::GearVR;
+		switch (GEngine->XRSystem->GetHMDDevice()->GetHMDDeviceType())
+		{       
+			case EHMDDeviceType::DT_OculusRift 				: return EVictoryHMDDevice::OculusRift;
+			case EHMDDeviceType::DT_Morpheus 				: return EVictoryHMDDevice::Morpheus;
+			case EHMDDeviceType::DT_SteamVR 				: return EVictoryHMDDevice::SteamVR;
+			case EHMDDeviceType::DT_ES2GenericStereoMesh 	: return EVictoryHMDDevice::ES2GenericStereoMesh;
+			case EHMDDeviceType::DT_GearVR 					: return EVictoryHMDDevice::GearVR;
+		}
 	}
+	  
 	return EVictoryHMDDevice::None;
 }
 
@@ -2925,7 +2923,7 @@ void UVictoryBPFunctionLibrary::Rendering__UnFreezeGameRendering()
 	
 bool UVictoryBPFunctionLibrary::ClientWindow__GameWindowIsForeGroundInOS()
 {   
-	return FPlatformApplicationMisc::IsThisApplicationForeground(); 
+	return FPlatformApplicationMisc::IsThisApplicationForeground();
 	/*
 	//Iterate Over Actors
 	UWorld* TheWorld = NULL;

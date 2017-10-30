@@ -57,8 +57,6 @@ public class VictoryBPLibrary : ModuleRules
 				
 				"HeadMountedDisplay",
   
-                "AIModule",
-				"ApplicationCore",
 			}
 			);
 		
@@ -80,7 +78,4 @@ public class VictoryBPLibrary : ModuleRules
 				// ... add any modules that your module loads dynamically here ...
 			}
 			);
-
-		//PublicIncludePaths.Add("ApexDestruction/Source/ApexDestruction/Public");
-    }
 }

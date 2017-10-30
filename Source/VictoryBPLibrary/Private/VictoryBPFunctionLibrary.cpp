@@ -4,6 +4,8 @@
     
 #include "VictoryBPFunctionLibrary.h"
 #include "VictoryBPLibraryPrivatePCH.h"
+
+
  
 
 //FGPUDriverInfo GPU 
@@ -15,6 +17,7 @@
 #include "StaticMeshResources.h"
 
 #include "HeadMountedDisplay.h"
+#include "IXRTrackingSystem.h"
  
 #include "GenericTeamAgentInterface.h"
 
@@ -36,16 +39,19 @@
 
 //~~~ Image Wrapper ~~~
 #include "ImageUtils.h"
-#include "Runtime/ImageWrapper/Public/Interfaces/IImageWrapper.h"
-#include "Runtime/ImageWrapper/Public/Interfaces/IImageWrapperModule.h"
+#include "IImageWrapper.h"
+#include "IImageWrapperModule.h"
 //~~~ Image Wrapper ~~~
 
 //Body Setup
 #include "PhysicsEngine/BodySetup.h"
 
+#include "DestructibleComponent.h"
+#include "HAL/PlatformApplicationMisc.h"
+#include "HAL/PlatformProcess.h"
 
 //Apex issues, can add iOS here  <3 Rama
-#if PLATFORM_ANDROID || PLATFORM_HTML5_BROWSER || PLATFORM_IOS
+#if PLATFORM_ANDROID || PLATFORM_HTML5 || PLATFORM_IOS
 #ifdef WITH_APEX
 #undef WITH_APEX
 #endif
@@ -558,6 +564,7 @@ bool UVictoryBPFunctionLibrary::VictoryPhysics_UpdateAngularDamping(UPrimitiveCo
 	 
 bool UVictoryBPFunctionLibrary::VictoryDestructible_DestroyChunk(UDestructibleComponent* DestructibleComp, int32 HitItem)
 {   
+	// DISABLED
 	#if WITH_APEX
 	if(!DestructibleComp) 
 	{
@@ -594,6 +601,8 @@ bool UVictoryBPFunctionLibrary::VictoryDestructible_DestroyChunk(UDestructibleCo
 	#endif //WITH_APEX
 	 
 	UE_LOG(LogTemp,Error,TEXT("UVictoryBPFunctionLibrary::VictoryDestructible_DestroyChunk ~ Current Platform does not support APEX"));
+	
+	UE_LOG(LogTemp, Error, TEXT("UVictoryBPFunctionLibrary::VictoryDestructible_DestroyChunk ~ NOT YET UPDATED TO 4.18"));
 	return false;
 }
 
@@ -659,7 +668,7 @@ bool UVictoryBPFunctionLibrary::JoyFileIO_GetFiles(TArray<FString>& Files, FStri
 {
 	if (RootFolderFullPath.Len() < 1)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ROOT FOLDER LEN < 1"));
+		UE_LOG(LogTemp, Error, TEXT("UVictoryBPFunctionLibrary::JoyFileIO_GetFiles ~ RootFolderFullPath is empty"));
 		return false;
 	}
 
@@ -947,16 +956,16 @@ FString UVictoryBPFunctionLibrary::VictoryPaths__WindowsNoEditorDir()
 
 FString UVictoryBPFunctionLibrary::VictoryPaths__GameRootDirectory()
 {
-	return FPaths::ConvertRelativePathToFull(FPaths::GameDir());
+	return FPaths::ConvertRelativePathToFull(FPaths::ProjectDir());
 }
 
 FString UVictoryBPFunctionLibrary::VictoryPaths__SavedDir()
 {
-	return FPaths::ConvertRelativePathToFull(FPaths::GameSavedDir());
+	return FPaths::ConvertRelativePathToFull(FPaths::ProjectSavedDir());
 }
 FString UVictoryBPFunctionLibrary::VictoryPaths__ConfigDir()
 {
-	return FPaths::ConvertRelativePathToFull(FPaths::GameConfigDir());
+	return FPaths::ConvertRelativePathToFull(FPaths::ProjectConfigDir());
 }
 
 FString UVictoryBPFunctionLibrary::VictoryPaths__ScreenShotsDir()
@@ -966,7 +975,7 @@ FString UVictoryBPFunctionLibrary::VictoryPaths__ScreenShotsDir()
  
 FString UVictoryBPFunctionLibrary::VictoryPaths__LogsDir()
 {
-	return FPaths::ConvertRelativePathToFull(FPaths::GameLogDir());
+	return FPaths::ConvertRelativePathToFull(FPaths::ProjectLogDir());
 }
 
 
@@ -1670,26 +1679,22 @@ void UVictoryBPFunctionLibrary::VictorySetCustomConfigVar_String(FString Section
 
 EVictoryHMDDevice UVictoryBPFunctionLibrary::GetHeadMountedDisplayDeviceType()
 {
-	if(!GEngine) return EVictoryHMDDevice::None;
+	if(!GEngine->XRSystem.IsValid() || !GEngine->XRSystem->GetHMDDevice()) return EVictoryHMDDevice::None;
 	 
-	if (GEngine->HMDDevice.IsValid())
+	//Actively connected?
+	if(!GEngine->XRSystem->GetHMDDevice()->IsHMDConnected())
 	{  
-		//Actively connected?
-		if(!GEngine->HMDDevice->IsHMDConnected()) 
-		{  
-			return EVictoryHMDDevice::None;
-		} 
-		
-		switch (GEngine->HMDDevice->GetHMDDeviceType()) 
-		{       
-			case EHMDDeviceType::DT_OculusRift 				: return EVictoryHMDDevice::OculusRift;
-			case EHMDDeviceType::DT_Morpheus 				: return EVictoryHMDDevice::Morpheus;
-			case EHMDDeviceType::DT_SteamVR 				: return EVictoryHMDDevice::SteamVR;
-			case EHMDDeviceType::DT_ES2GenericStereoMesh 	: return EVictoryHMDDevice::ES2GenericStereoMesh;
-			case EHMDDeviceType::DT_GearVR 					: return EVictoryHMDDevice::GearVR;
-		}
+		return EVictoryHMDDevice::None;
 	}
-	  
+		
+	switch (GEngine->XRSystem->GetHMDDevice()->GetHMDDeviceType())
+	{       
+		case EHMDDeviceType::DT_OculusRift 				: return EVictoryHMDDevice::OculusRift;
+		case EHMDDeviceType::DT_Morpheus 				: return EVictoryHMDDevice::Morpheus;
+		case EHMDDeviceType::DT_SteamVR 				: return EVictoryHMDDevice::SteamVR;
+		case EHMDDeviceType::DT_ES2GenericStereoMesh 	: return EVictoryHMDDevice::ES2GenericStereoMesh;
+		case EHMDDeviceType::DT_GearVR 					: return EVictoryHMDDevice::GearVR;
+	}
 	return EVictoryHMDDevice::None;
 }
 
@@ -2455,11 +2460,11 @@ bool UVictoryBPFunctionLibrary::IsAlphaNumeric(const FString& String)
 
 void UVictoryBPFunctionLibrary::Victory_GetStringFromOSClipboard(FString& FromClipboard)
 {  
-	FPlatformMisc::ClipboardPaste(FromClipboard);
+	FPlatformApplicationMisc::ClipboardPaste(FromClipboard);
 } 
 void UVictoryBPFunctionLibrary::Victory_SaveStringToOSClipboard(const FString& ToClipboard)
 {
-	FPlatformMisc::ClipboardCopy(*ToClipboard);
+	FPlatformApplicationMisc::ClipboardCopy(*ToClipboard);
 }
 	
 
@@ -2920,7 +2925,7 @@ void UVictoryBPFunctionLibrary::Rendering__UnFreezeGameRendering()
 	
 bool UVictoryBPFunctionLibrary::ClientWindow__GameWindowIsForeGroundInOS()
 {   
-	return FPlatformProcess::IsThisApplicationForeground();
+	return FPlatformApplicationMisc::IsThisApplicationForeground(); 
 	/*
 	//Iterate Over Actors
 	UWorld* TheWorld = NULL;
@@ -4181,7 +4186,7 @@ void UVictoryBPFunctionLibrary::String__ExplodeString(TArray<FString>& OutputStr
 					SeparatorIndex = 0;
 					PartialMatchStart = -1;
 					if (bTrimElements == true) {
-						OutputStrings.Add(FString(Section).Trim().TrimTrailing());
+						OutputStrings.Add(FString(Section).TrimStart().TrimEnd());
 					}
 					else {
 						OutputStrings.Add(FString(Section));
@@ -4218,7 +4223,7 @@ void UVictoryBPFunctionLibrary::String__ExplodeString(TArray<FString>& OutputStr
 
 		//If there is anything left in Section or Extra. They should be added as a new entry.
 		if (bTrimElements == true) {
-			OutputStrings.Add(FString(Section + Extra).Trim().TrimTrailing());
+			OutputStrings.Add(FString(Section + Extra).TrimStart().TrimEnd());
 		}
 		else {
 			OutputStrings.Add(FString(Section + Extra));
@@ -4325,7 +4330,7 @@ UTexture2D* UVictoryBPFunctionLibrary::LoadTexture2D_FromDDSFile(const FString& 
 
 
 //this is how you can make cpp only internal functions!
-static EImageFormat::Type GetJoyImageFormat(EJoyImageFormats JoyFormat)
+static EImageFormat GetJoyImageFormat(EJoyImageFormats JoyFormat)
 {
 	/*
 	ImageWrapper.h
@@ -4392,7 +4397,7 @@ UTexture2D* UVictoryBPFunctionLibrary::Victory_LoadTexture2D_FromFile(const FStr
 	UTexture2D* LoadedT2D = NULL;
 	
 	IImageWrapperModule& ImageWrapperModule = FModuleManager::LoadModuleChecked<IImageWrapperModule>(FName("ImageWrapper"));
-	IImageWrapperPtr ImageWrapper = ImageWrapperModule.CreateImageWrapper(GetJoyImageFormat(ImageFormat));
+	TSharedPtr<IImageWrapper> ImageWrapper = ImageWrapperModule.CreateImageWrapper(GetJoyImageFormat(ImageFormat));
  
 	//Load From File
 	TArray<uint8> RawFileData;
@@ -4438,7 +4443,7 @@ UTexture2D* UVictoryBPFunctionLibrary::Victory_LoadTexture2D_FromFile_Pixels(con
 	UTexture2D* LoadedT2D = NULL;
 	
 	IImageWrapperModule& ImageWrapperModule = FModuleManager::LoadModuleChecked<IImageWrapperModule>(FName("ImageWrapper"));
-	IImageWrapperPtr ImageWrapper = ImageWrapperModule.CreateImageWrapper(GetJoyImageFormat(ImageFormat));
+	TSharedPtr<IImageWrapper> ImageWrapper = ImageWrapperModule.CreateImageWrapper(GetJoyImageFormat(ImageFormat));
  
 	//Load From File
 	TArray<uint8> RawFileData;
@@ -4598,7 +4603,7 @@ bool UVictoryBPFunctionLibrary::Victory_SavePixels(
 	IImageWrapperModule& ImageWrapperModule = FModuleManager::LoadModuleChecked<IImageWrapperModule>(FName("ImageWrapper"));
 	
 	//Create Compressor
-	IImageWrapperPtr ImageWrapper = ImageWrapperModule.CreateImageWrapper(GetJoyImageFormat(ImageFormat));
+	TSharedPtr<IImageWrapper> ImageWrapper = ImageWrapperModule.CreateImageWrapper(GetJoyImageFormat(ImageFormat));
 	
 	if(!ImageWrapper.IsValid()) 
 	{
@@ -4989,7 +4994,7 @@ bool UVictoryBPFunctionLibrary::Capture2D_Project(class ASceneCapture2D* Target,
     return (Target) ? CaptureComponent2D_Project(Target->GetCaptureComponent2D(), Location, OutPixelLocation) : false;
 }
  
-static IImageWrapperPtr GetImageWrapperByExtention(const FString InImagePath)
+static TSharedPtr<IImageWrapper> GetImageWrapperByExtention(const FString InImagePath)
 {
     IImageWrapperModule& ImageWrapperModule = FModuleManager::LoadModuleChecked<IImageWrapperModule>(FName("ImageWrapper"));
     if (InImagePath.EndsWith(".png"))
@@ -5063,7 +5068,7 @@ bool UVictoryBPFunctionLibrary::CaptureComponent2D_SaveImage(class USceneCapture
 		Pixel.A = ((Pixel.R == ClearFColour.R) && (Pixel.G == ClearFColour.G) && (Pixel.B == ClearFColour.B)) ? 0 : 255;
 	}
 	
-	IImageWrapperPtr ImageWrapper = GetImageWrapperByExtention(ImagePath);
+	TSharedPtr<IImageWrapper> ImageWrapper = GetImageWrapperByExtention(ImagePath);
 
 	const int32 Width = Target->TextureTarget->SizeX;
 	const int32 Height = Target->TextureTarget->SizeY;
@@ -5099,7 +5104,7 @@ UTexture2D* UVictoryBPFunctionLibrary::LoadTexture2D_FromFileByExtension(const F
 		return nullptr;
 	}
 	
-	IImageWrapperPtr ImageWrapper = GetImageWrapperByExtention(ImagePath);
+	TSharedPtr<IImageWrapper> ImageWrapper = GetImageWrapperByExtention(ImagePath);
 
 	if (ImageWrapper.IsValid() && ImageWrapper->SetCompressed(CompressedData.GetData(), CompressedData.Num()))
 	{ 
@@ -5350,7 +5355,7 @@ void UVictoryBPFunctionLibrary::AddToStreamingLevels(UObject* WorldContextObject
 				PackageName = FName(*PackageNameStr);
 			}
 
-			World->DelayGarbageCollection();
+			GEngine->DelayGarbageCollection();
 
 			// Setup streaming level object that will load specified map
 			ULevelStreamingKismet* StreamingLevel = NewObject<ULevelStreamingKismet>(World, ULevelStreamingKismet::StaticClass(), NAME_None, RF_Transient, nullptr);

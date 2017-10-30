@@ -31,6 +31,7 @@ public class VictoryBPLibrary : ModuleRules
 			new string[]
 			{
 				"Core",
+				"ApexDestruction",
 				
 				// ... add other public dependencies that you statically link with here ...
 			}
@@ -56,7 +57,8 @@ public class VictoryBPLibrary : ModuleRules
 				
 				"HeadMountedDisplay",
   
-                "AIModule"	
+                "AIModule",
+				"ApplicationCore",
 			}
 			);
 		
@@ -78,5 +80,7 @@ public class VictoryBPLibrary : ModuleRules
 				// ... add any modules that your module loads dynamically here ...
 			}
 			);
-	}
+
+		//PublicIncludePaths.Add("ApexDestruction/Source/ApexDestruction/Public");
+    }
 }

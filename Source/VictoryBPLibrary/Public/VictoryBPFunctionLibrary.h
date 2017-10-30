@@ -1775,6 +1775,7 @@ static void SetBloomIntensity(APostProcessVolume* PostProcessVolume,float Intens
 	/** Contributed by Community Member Kris! */
 	UFUNCTION(Category = "Victory BP Library|SceneCapture", BlueprintPure, Meta = (DefaultToSelf = "Target"))
 	static bool Capture2D_Project(class ASceneCapture2D* Target, FVector Location, FVector2D& OutPixelLocation);
+
 	/** Currently the only supported format for this function is B8G8R8A8. Make sure to include the appropriate image extension in your file path! Recommended: .bmp, .jpg, .png. Contributed by Community Member Kris! */
 	UFUNCTION(Category = "Victory BP Library|SceneCapture", BlueprintCallable)
 	static bool CaptureComponent2D_SaveImage(class USceneCaptureComponent2D* Target, const FString ImagePath, const FLinearColor ClearColour);

@@ -6,6 +6,10 @@
  
 #include "VictoryBPFunctionLibrary.h"
 
+//Foreground Window check, clipboard copy/paste
+#include "Runtime/ApplicationCore/Public/HAL/PlatformApplicationMisc.h"
+
+
 //FGPUDriverInfo GPU 
 #include "Runtime/Core/Public/GenericPlatform/GenericPlatformDriver.h"
  
@@ -45,7 +49,6 @@
 #include "PhysicsEngine/BodySetup.h"
 
 #include "DestructibleComponent.h"
-#include "HAL/PlatformApplicationMisc.h"
 
 
 //Apex issues, can add iOS here  <3 Rama

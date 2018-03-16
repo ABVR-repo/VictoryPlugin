@@ -2988,6 +2988,16 @@ bool UVictoryBPFunctionLibrary::FileIO__SaveStringTextToFile(
 	
 	return FFileHelper::SaveStringToFile(SaveText, * SaveDirectory);
 }
+bool UVictoryBPFunctionLibrary::FileIO__DeleteFile(FString AbsoluteFilePath) 
+{
+	if (!FPlatformFileManager::Get().GetPlatformFile().DeleteFile(*AbsoluteFilePath))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Could find find or do not have access to file to delete: %s"), *AbsoluteFilePath);
+		return false;
+	}
+	
+	return true;
+}
 bool UVictoryBPFunctionLibrary::FileIO__SaveStringArrayToFile(FString SaveDirectory, FString JoyfulFileName, TArray<FString> SaveText, bool AllowOverWriting)  
 {
 	//Dir Exists?

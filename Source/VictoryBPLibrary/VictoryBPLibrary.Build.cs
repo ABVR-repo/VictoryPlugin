@@ -1,6 +1,7 @@
 // Some copyright should be here...
 
 using UnrealBuildTool;
+using System.IO;
 
 public class VictoryBPLibrary : ModuleRules
 {
@@ -11,7 +12,7 @@ public class VictoryBPLibrary : ModuleRules
 
 		PublicIncludePaths.AddRange(
 			new string[] {
-				"VictoryBPLibrary/Public"
+				Path.Combine(ModuleDirectory, "Public")
 				
 				// ... add public include paths required here ...
 			}
@@ -20,7 +21,7 @@ public class VictoryBPLibrary : ModuleRules
 
 		PrivateIncludePaths.AddRange(
 			new string[] {
-				"VictoryBPLibrary/Private",
+				Path.Combine(ModuleDirectory, "Private"),
 				
 				// ... add other private include paths required here ...
 			}

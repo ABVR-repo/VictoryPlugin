@@ -24,6 +24,7 @@
 			"LoadingPhase" : "PreDefault",
 			"WhitelistPlatforms" :
 			[
+				"Android",
 				"Win64",
 				"Win32",
 				"HTML5",

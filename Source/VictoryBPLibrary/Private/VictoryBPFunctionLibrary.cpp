@@ -46,9 +46,9 @@
 
 //Body Setup
 #include "PhysicsEngine/BodySetup.h"
-
+/*
 #include "DestructibleComponent.h"
-
+*/
 
 //Apex issues, can add iOS here  <3 Rama
 #if PLATFORM_ANDROID || PLATFORM_HTML5 || PLATFORM_IOS
@@ -561,7 +561,7 @@ bool UVictoryBPFunctionLibrary::VictoryPhysics_UpdateAngularDamping(UPrimitiveCo
 	
 	return true;
 }
-	 
+/*
 bool UVictoryBPFunctionLibrary::VictoryDestructible_DestroyChunk(UDestructibleComponent* DestructibleComp, int32 HitItem)
 {   
 	#if WITH_APEX
@@ -601,7 +601,7 @@ bool UVictoryBPFunctionLibrary::VictoryDestructible_DestroyChunk(UDestructibleCo
 	 
 	UE_LOG(LogTemp,Error,TEXT("UVictoryBPFunctionLibrary::VictoryDestructible_DestroyChunk ~ Current Platform does not support APEX"));
 	return false;
-}
+}*/
 
 static int32 GetChildBones(const FReferenceSkeleton& ReferenceSkeleton, int32 ParentBoneIndex, TArray<int32> & Children)
 { 

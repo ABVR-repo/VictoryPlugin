@@ -72,7 +72,7 @@ public class VictoryBPLibrary : ModuleRules
 			PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
-				//"APEX",
+				"APEX",
 
 			}
 			);

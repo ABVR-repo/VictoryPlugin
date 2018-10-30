@@ -414,8 +414,8 @@ class VICTORYBPLIBRARY_API UVictoryBPFunctionLibrary : public UBlueprintFunction
 	UFUNCTION(BlueprintPure, Category = "Victory BP Library|Physics", meta=(Keywords="Closest Surface"))
 	static float GetDistanceBetweenComponentSurfaces(UPrimitiveComponent* CollisionComponent1, UPrimitiveComponent* CollisionComponent2, FVector& PointOnSurface1, FVector& PointOnSurface2);
 
-	UFUNCTION(BlueprintCallable, Category = "Victory BP Library|Physics", meta=(Keywords="APEX Piece fracture damage PhysX Physics"))
-	static bool VictoryDestructible_DestroyChunk(UDestructibleComponent* DestructibleComp, int32 HitItem);
+	//UFUNCTION(BlueprintCallable, Category = "Victory BP Library|Physics", meta=(Keywords="APEX Piece fracture damage PhysX Physics"))
+	//static bool VictoryDestructible_DestroyChunk(UDestructibleComponent* DestructibleComp, int32 HitItem);
 
 
 	//~~~~~~~~~~

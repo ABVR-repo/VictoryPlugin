@@ -24,17 +24,10 @@
 			"LoadingPhase" : "PreDefault",
 			"WhitelistPlatforms" :
 			[
+				"Android",
 				"Win64",
 				"Win32",
 			]
-		}
-	],
-	"Plugins" :
-	[
-		{
-			"Name" : "ApexDestruction",
-			"Enabled" : true
-			
 		}
 	]
 }

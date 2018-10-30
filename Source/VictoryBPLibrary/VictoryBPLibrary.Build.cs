@@ -72,7 +72,7 @@ public class VictoryBPLibrary : ModuleRules
 			PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"APEX",
+				//"APEX",
 
 			}
 			);
@@ -80,7 +80,7 @@ public class VictoryBPLibrary : ModuleRules
 			PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"ApexDestruction",
+				//"ApexDestruction",
 			}
 			);
 		}

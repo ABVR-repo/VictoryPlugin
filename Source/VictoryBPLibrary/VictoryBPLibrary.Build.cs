@@ -6,7 +6,9 @@ using System.IO;
 public class VictoryBPLibrary : ModuleRules
 {
 	public VictoryBPLibrary(ReadOnlyTargetRules Target) : base(Target)
-	{
+	{ 
+		PrivatePCHHeaderFile = "Private/VictoryBPLibraryPrivatePCH.h";
+
 		//4.15 Include What You Use
 		bEnforceIWYU = false;
 

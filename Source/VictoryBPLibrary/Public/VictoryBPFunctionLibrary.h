@@ -1493,7 +1493,7 @@ class VICTORYBPLIBRARY_API UVictoryBPFunctionLibrary : public UBlueprintFunction
 	* @param limit - If greater than zero, returns only the first x strings. Otherwsie returns all the substrings
 	* @param bTrimElelements - If True, then each subsctring is processed and any leading or trailing whitespcaes are trimmed.
 	*/
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "Victory BP Library|String", Keywords = "split explode string"), Category = String)
+	UFUNCTION(BlueprintPure, Category = "Victory BP Library|String", meta = (DisplayName = "Explode String", Keywords = "split explode string"))
 	static void String__ExplodeString(TArray<FString>& OutputStrings, FString InputString, FString Separator = ",", int32 limit = 0, bool bTrimElements = false);
 
 

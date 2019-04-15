@@ -63,6 +63,8 @@ public class VictoryBPLibrary : ModuleRules
 				
 				"NavigationSystem",
 				
+				"Vorbis",
+				
 				//FPlatformApplicationMisc
 				"ApplicationCore"
 			}

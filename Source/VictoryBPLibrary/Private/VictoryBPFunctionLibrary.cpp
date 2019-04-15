@@ -15,6 +15,9 @@
 //MD5 Hash
 #include "Runtime/Core/Public/Misc/SecureHash.h"
 
+#include "Runtime/Engine/Public/VorbisAudioInfo.h"
+
+
 #include "StaticMeshResources.h"
 
 #include "HeadMountedDisplay.h"
@@ -3234,7 +3237,6 @@ AActor*  UVictoryBPFunctionLibrary::Traces__CharacterMeshTrace___ClosestBone(
 	//Simple Trace First
 	FCollisionQueryParams TraceParams(FName(TEXT("VictoryBPTrace::CharacterMeshTrace")), true, HitActor);
 	TraceParams.bTraceComplex = true;
-	TraceParams.bTraceAsyncScene = true;
 	TraceParams.bReturnPhysicalMaterial = false;
 	TraceParams.AddIgnoredActor(TraceOwner);
 	
@@ -3306,7 +3308,6 @@ AActor* UVictoryBPFunctionLibrary::Traces__CharacterMeshTrace___ClosestSocket(
 	//Simple Trace First
 	FCollisionQueryParams TraceParams(FName(TEXT("VictoryBPTrace::CharacterMeshSocketTrace")), true, HitActor);
 	TraceParams.bTraceComplex = true;
-	TraceParams.bTraceAsyncScene = true;
 	TraceParams.bReturnPhysicalMaterial = false;
 	TraceParams.AddIgnoredActor(TraceOwner);
 	

@@ -1034,7 +1034,7 @@ void UVictoryBPFunctionLibrary::VictoryGetAllAxisKeyBindings(TArray<FVictoryInpu
 	const UInputSettings* Settings = GetDefault<UInputSettings>();
 	if(!Settings) return;
 	
-	const TArray<FInputAxisKeyMapping>& Axi = Settings->AxisMappings;
+	const TArray<FInputAxisKeyMapping>& Axi = Settings->GetAxisMappings();
 	
 	for(const FInputAxisKeyMapping& Each : Axi)
 	{
@@ -1047,7 +1047,7 @@ void UVictoryBPFunctionLibrary::VictoryRemoveAxisKeyBind(FVictoryInputAxis ToRem
 	UInputSettings* Settings = GetMutableDefault<UInputSettings>();
 	if(!Settings) return;
 	
-	TArray<FInputAxisKeyMapping>& Axi = Settings->AxisMappings;
+	TArray<FInputAxisKeyMapping>& Axi = const_cast<TArray<FInputAxisKeyMapping>&>(Settings->GetAxisMappings());
 	  
 	bool Found = false;
 	for(int32 v = 0; v < Axi.Num(); v++)
@@ -1081,7 +1081,7 @@ void UVictoryBPFunctionLibrary::VictoryGetAllActionKeyBindings(TArray<FVictoryIn
 	const UInputSettings* Settings = GetDefault<UInputSettings>();
 	if(!Settings) return;
 	
-	const TArray<FInputActionKeyMapping>& Actions = Settings->ActionMappings;
+	const TArray<FInputActionKeyMapping>& Actions = Settings->GetActionMappings();
 	
 	for(const FInputActionKeyMapping& Each : Actions)
 	{
@@ -1095,7 +1095,7 @@ void UVictoryBPFunctionLibrary::VictoryRemoveActionKeyBind(FVictoryInput ToRemov
 	UInputSettings* Settings = GetMutableDefault<UInputSettings>();
 	if(!Settings) return;
 	
-	TArray<FInputActionKeyMapping>& Actions = Settings->ActionMappings;
+	TArray<FInputActionKeyMapping>& Actions = const_cast<TArray<FInputActionKeyMapping>&>(Settings->GetActionMappings());
 	  
 	bool Found = false;
 	for(int32 v = 0; v < Actions.Num(); v++)
@@ -1130,7 +1130,7 @@ void UVictoryBPFunctionLibrary::VictoryGetAllAxisAndActionMappingsForKey(FKey Ke
 		const UInputSettings* Settings = GetDefault<UInputSettings>();
 	if(!Settings) return;
 	
-	const TArray<FInputActionKeyMapping>& Actions = Settings->ActionMappings;
+	const TArray<FInputActionKeyMapping>& Actions = Settings->GetActionMappings();
 	
 	for(const FInputActionKeyMapping& Each : Actions)
 	{
@@ -1140,7 +1140,7 @@ void UVictoryBPFunctionLibrary::VictoryGetAllAxisAndActionMappingsForKey(FKey Ke
 		}
 	}
 
-	const TArray<FInputAxisKeyMapping>& Axi = Settings->AxisMappings;
+	const TArray<FInputAxisKeyMapping>& Axi = Settings->GetAxisMappings();
 	
 	for(const FInputAxisKeyMapping& Each : Axi)
 	{  
@@ -1155,7 +1155,7 @@ bool UVictoryBPFunctionLibrary::VictoryReBindAxisKey(FVictoryInputAxis Original,
 	UInputSettings* Settings = const_cast<UInputSettings*>(GetDefault<UInputSettings>());
 	if(!Settings) return false;
 
-	TArray<FInputAxisKeyMapping>& Axi = Settings->AxisMappings;
+	TArray<FInputAxisKeyMapping>& Axi = const_cast<TArray<FInputAxisKeyMapping>&>(Settings->GetAxisMappings());
 	
 	//~~~
 	 
@@ -1192,7 +1192,7 @@ bool UVictoryBPFunctionLibrary::VictoryReBindActionKey(FVictoryInput Original, F
 	UInputSettings* Settings = const_cast<UInputSettings*>(GetDefault<UInputSettings>());
 	if(!Settings) return false;
 
-	TArray<FInputActionKeyMapping>& Actions = Settings->ActionMappings;
+	TArray<FInputActionKeyMapping>& Actions = const_cast<TArray<FInputActionKeyMapping>&>(Settings->GetActionMappings());
 	
 	//~~~
 	
@@ -4678,7 +4678,7 @@ int32 UVictoryBPFunctionLibrary::findSource(class USoundWave* sw, class FSoundSo
 		for (auto activeSoundIt(tmpActualSounds.CreateIterator()); activeSoundIt; ++activeSoundIt)
 		{
 			activeSound = *activeSoundIt;
-			for (auto WaveInstanceIt(activeSound->WaveInstances.CreateIterator()); WaveInstanceIt; ++WaveInstanceIt)
+			for (auto WaveInstanceIt(activeSound->GetWaveInstances().CreateConstIterator()); WaveInstanceIt; ++WaveInstanceIt)
 			{
 				sw_instance = WaveInstanceIt.Value();
 				if (sw_instance->WaveData->CompressedDataGuid == sw->CompressedDataGuid)

@@ -54,7 +54,7 @@
 
 
 //Apex issues, can add iOS here  <3 Rama
-#if PLATFORM_ANDROID || PLATFORM_HTML5 || PLATFORM_IOS
+#if PLATFORM_ANDROID || PLATFORM_IOS
 #ifdef WITH_APEX
 #undef WITH_APEX
 #endif
@@ -2300,7 +2300,6 @@ void UVictoryBPFunctionLibrary::OperatingSystem__GetCurrentPlatform(
 	Android = 				PLATFORM_ANDROID;
 	Android_ARM  	=		PLATFORM_ANDROID_ARM;
 	Android_Vulkan	= 		PLATFORM_ANDROID_VULKAN;
-	HTML5 = 					PLATFORM_HTML5;
 	 
 	Apple =	 			PLATFORM_APPLE;
 }
@@ -4071,7 +4070,7 @@ UTexture2D* UVictoryBPFunctionLibrary::LoadTexture2D_FromDDSFile(const FString& 
 			/* Create transient texture */
 			Texture = UTexture2D::CreateTransient( DDSLoadHelper.DDSHeader->dwWidth, DDSLoadHelper.DDSHeader->dwHeight, Format );
 			if(!Texture) return NULL;
-			Texture->PlatformData->NumSlices = 1;
+			Texture->PlatformData->SetNumSlices(1);
 			Texture->NeverStream = true;
 		
 			/* Get pointer to actual data */

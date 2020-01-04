@@ -2300,6 +2300,7 @@ void UVictoryBPFunctionLibrary::OperatingSystem__GetCurrentPlatform(
 	Android = 				PLATFORM_ANDROID;
 	Android_ARM  	=		PLATFORM_ANDROID_ARM;
 	Android_Vulkan	= 		PLATFORM_ANDROID_VULKAN;
+	HTML5 = false;//PLATFORM_HTML5;
 	 
 	Apple =	 			PLATFORM_APPLE;
 }

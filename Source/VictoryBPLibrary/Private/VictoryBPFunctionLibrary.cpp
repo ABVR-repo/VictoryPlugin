@@ -3013,7 +3013,8 @@ bool UVictoryBPFunctionLibrary::FileIO__SaveStringTextToFile(
 	FString SaveDirectory, 
 	FString JoyfulFileName, 
 	FString SaveText,
-	bool AllowOverWriting
+	bool AllowOverWriting,
+	bool AllowAppend
 ){
 	if(!FPlatformFileManager::Get().GetPlatformFile().CreateDirectoryTree(*SaveDirectory))
 	{
@@ -3037,8 +3038,58 @@ bool UVictoryBPFunctionLibrary::FileIO__SaveStringTextToFile(
 		}
 	}
 	
+	if (AllowAppend)
+	{
+		SaveText += "\n";
+		return FFileHelper::SaveStringToFile(SaveText, * SaveDirectory,
+				FFileHelper::EEncodingOptions::AutoDetect,&IFileManager::Get(), EFileWrite::FILEWRITE_Append);
+	}
+
 	return FFileHelper::SaveStringToFile(SaveText, * SaveDirectory);
 }
+
+bool UVictoryBPFunctionLibrary::FileIO__SaveStringArrayToFile(FString SaveDirectory, FString JoyfulFileName, TArray<FString> SaveText, bool AllowOverWriting, bool AllowAppend)
+{
+	//Dir Exists?
+	if (!VCreateDirectory(SaveDirectory))
+	{
+		//Could not make the specified directory
+		return false;
+		//~~~~~~~~~~~~~~~~~~~~~~
+	}
+
+	//get complete file path
+	SaveDirectory += "\\";
+	SaveDirectory += JoyfulFileName;
+
+	//No over-writing?
+	if (!AllowOverWriting)
+	{
+		//Check if file exists already
+		if (FPlatformFileManager::Get().GetPlatformFile().FileExists(*SaveDirectory))
+		{
+			//no overwriting
+			return false;
+		}
+	}
+
+	FString FinalStr = "";
+	for (FString& Each : SaveText)
+	{
+		FinalStr += Each;
+		FinalStr += LINE_TERMINATOR;
+	}
+
+	if (AllowAppend)
+	{
+		FinalStr += "\n";
+		return FFileHelper::SaveStringToFile(FinalStr, *SaveDirectory,
+			FFileHelper::EEncodingOptions::AutoDetect, &IFileManager::Get(), EFileWrite::FILEWRITE_Append);
+	}
+
+	return FFileHelper::SaveStringToFile(FinalStr, *SaveDirectory);
+}
+
 bool UVictoryBPFunctionLibrary::FileIO__DeleteFile(FString AbsoluteFilePath) 
 {
 	if (!FPlatformFileManager::Get().GetPlatformFile().DeleteFile(*AbsoluteFilePath))
@@ -3048,43 +3099,6 @@ bool UVictoryBPFunctionLibrary::FileIO__DeleteFile(FString AbsoluteFilePath)
 	}
 	
 	return true;
-}
-bool UVictoryBPFunctionLibrary::FileIO__SaveStringArrayToFile(FString SaveDirectory, FString JoyfulFileName, TArray<FString> SaveText, bool AllowOverWriting)  
-{
-	//Dir Exists?
-	if ( !VCreateDirectory(SaveDirectory))
-	{
-		//Could not make the specified directory
-		return false;
-		//~~~~~~~~~~~~~~~~~~~~~~
-	}
-	
-	//get complete file path
-	SaveDirectory += "\\";
-	SaveDirectory += JoyfulFileName;
-	
-	//No over-writing?
-	if (!AllowOverWriting)
-	{
-		//Check if file exists already
-		if (FPlatformFileManager::Get().GetPlatformFile().FileExists( * SaveDirectory))
-		{
-			//no overwriting
-			return false;
-		}
-	}
-	 
-	FString FinalStr = "";
-	for(FString& Each : SaveText)
-	{
-		FinalStr += Each;
-		FinalStr += LINE_TERMINATOR;
-	}
-	
-
-
-	return FFileHelper::SaveStringToFile(FinalStr, * SaveDirectory);
-	
 }
 float UVictoryBPFunctionLibrary::Calcs__ClosestPointToSourcePoint(const FVector & Source, const TArray<FVector>& OtherPoints, FVector& ClosestPoint)
 {
@@ -4480,11 +4494,6 @@ bool UVictoryBPFunctionLibrary::Victory_SavePixels(
 
 bool UVictoryBPFunctionLibrary::Victory_GetPixelFromT2D(UTexture2D* T2D, int32 X, int32 Y, FLinearColor& PixelColor)
 {
-	//See .h deprecation msg
-	return false;
-	 
-	
-	/*
 	if(!T2D) 
 	{
 		return false;
@@ -4494,8 +4503,22 @@ bool UVictoryBPFunctionLibrary::Victory_GetPixelFromT2D(UTexture2D* T2D, int32 X
 	{
 		return false;
 	}
-	 
+	
+	
+	//~~~
+	if(T2D->CompressionSettings != TC_VectorDisplacementmap)
+	{
+		#if WITH_EDITOR
+			FMessageLog("PIE").Error(FText::Format(LOCTEXT("Victory_GetPixelFromT2D", "UVictoryBPFunctionLibrary::Victory_GetPixelFromT2D >> Texture Compression must be VectorDisplacementmap <3 Rama: {0}'"), FText::FromString(T2D->GetName())));
+		#endif // WITH_EDITOR
+		return false;
+	}
+	
+
+	//~~~
+	
 	T2D->SRGB = false;
+	
 	T2D->CompressionSettings = TC_VectorDisplacementmap;
 	
 	//Update settings
@@ -4505,6 +4528,15 @@ bool UVictoryBPFunctionLibrary::Victory_GetPixelFromT2D(UTexture2D* T2D, int32 X
 	int32 TextureWidth = MipsMap.SizeX;
 	int32 TextureHeight = MipsMap.SizeY;
 	 
+	//Safety check!
+	if (X >= TextureWidth || Y >= TextureHeight)
+	{
+		#if WITH_EDITOR
+			FMessageLog("PIE").Error(FText::Format(LOCTEXT("Victory_GetPixelFromT2D", "UVictoryBPFunctionLibrary::Victory_GetPixelFromT2D >> X or Y is outside of texture bounds! <3 Rama: {0}'"), FText::FromString(FString::FromInt(TextureWidth) + " x " + FString::FromInt(TextureHeight) )));
+		#endif // WITH_EDITOR
+		return false;
+	}
+	
 	FByteBulkData* RawImageData 	= &MipsMap.BulkData;
 	
 	if(!RawImageData) 
@@ -4512,21 +4544,104 @@ bool UVictoryBPFunctionLibrary::Victory_GetPixelFromT2D(UTexture2D* T2D, int32 X
 		return false;
 	}
 	
-	FColor* RawColorArray = static_cast<FColor*>(RawImageData->Lock(LOCK_READ_ONLY));
-	
-	//Safety check!
-	if (X >= TextureWidth || Y >= TextureHeight)
+	int32 TotalCount = RawImageData->GetElementCount();
+	if(TotalCount < 1)
 	{
 		return false;
 	}
-	   
+	 
+	uint8* RawByteArray = (uint8*)RawImageData->Lock(LOCK_READ_ONLY);
+			
+	//TC_VectorDisplacementmap	UMETA(DisplayName="VectorDisplacementmap (RGBA8)"),
+	//! 4 because includes alpha <3 Rama
+	/*
+	for(int32 v = 0; v < TextureWidth * TextureHeight * RawImageData->GetElementSize() * 4; v++)
+	{
+		DebugString += FString::FromInt(RawByteArray[v]) + " ";
+	}
+	*/
+ 
+	//Texture.cpp
+	/*
+	else if (FormatSettings.CompressionSettings == TC_VectorDisplacementmap)
+	{
+		TextureFormatName = NameBGRA8;
+	}
+	*/
+	
 	//Get!, converting FColor to FLinearColor 
-	PixelColor = RawColorArray[Y * TextureWidth + X];
-  
+	FColor ByteColor;
+	ByteColor.B = RawByteArray[Y * TextureWidth * 4 + (X * 4) ];
+	ByteColor.G = RawByteArray[Y * TextureWidth * 4 + (X * 4) + 1];
+	ByteColor.R = RawByteArray[Y * TextureWidth * 4 + (X * 4) + 2];
+	ByteColor.A = RawByteArray[Y * TextureWidth * 4 + (X * 4) + 3];
+	
+	//Set!
+	PixelColor = ByteColor.ReinterpretAsLinear();
+	
+	RawImageData->Unlock();
+	
+	return true;
+}
+
+
+bool UVictoryBPFunctionLibrary::Victory_GetPixelsArrayFromT2D(UTexture2D* T2D, int32& TextureWidth, int32& TextureHeight,TArray<FLinearColor>& PixelArray)
+{
+	
+	if(!T2D) 
+	{
+		return false;
+	}
+	
+	if(T2D->CompressionSettings != TC_VectorDisplacementmap)
+	{
+		#if WITH_EDITOR
+			FMessageLog("PIE").Error(FText::Format(LOCTEXT("Victory_GetPixelFromT2D", "UVictoryBPFunctionLibrary::Victory_GetPixelFromT2D >> Texture Compression must be VectorDisplacementmap <3 Rama: {0}'"), FText::FromString(T2D->GetName())));
+		#endif // WITH_EDITOR
+		return false;
+	}
+	
+	//To prevent overflow in BP if used in a loop
+	PixelArray.Empty();
+	
+	T2D->SRGB = false;
+	T2D->CompressionSettings = TC_VectorDisplacementmap;
+	
+	//Update settings
+	T2D->UpdateResource();
+	 
+	FTexture2DMipMap& MyMipMap 	= T2D->PlatformData->Mips[0];
+	TextureWidth = MyMipMap.SizeX;
+	TextureHeight = MyMipMap.SizeY;
+	 
+	FByteBulkData* RawImageData 	= &MyMipMap.BulkData;
+	
+	if(!RawImageData) 
+	{
+		return false;
+	}
+	
+	uint8* RawByteArray = (uint8*)RawImageData->Lock(LOCK_READ_ONLY);
+	
+	
+	for(int32 y = 0; y < TextureHeight; y++)   
+	{
+		for(int32 x = 0; x < TextureWidth; x++)
+		{
+			FColor ByteColor;
+			ByteColor.B = RawByteArray[y * TextureWidth * 4 + (x * 4) ];
+			ByteColor.G = RawByteArray[y * TextureWidth * 4 + (x * 4) + 1];
+			ByteColor.R = RawByteArray[y * TextureWidth * 4 + (x * 4) + 2];
+			ByteColor.A = RawByteArray[y * TextureWidth * 4 + (x * 4) + 3];
+			
+			PixelArray.Add(ByteColor.ReinterpretAsLinear());
+		}
+	}
+	  
 	RawImageData->Unlock();
 	return true;
-	*/
 }
+
 bool UVictoryBPFunctionLibrary::Victory_GetPixelsArrayFromT2DDynamic(UTexture2DDynamic* T2D, int32& TextureWidth, int32& TextureHeight,TArray<FLinearColor>& PixelArray)
 {
 	if(!T2D) 
@@ -4584,52 +4699,6 @@ bool UVictoryBPFunctionLibrary::Victory_GetPixelsArrayFromT2DDynamic(UTexture2DD
 	*/
 }
 
-bool UVictoryBPFunctionLibrary::Victory_GetPixelsArrayFromT2D(UTexture2D* T2D, int32& TextureWidth, int32& TextureHeight,TArray<FLinearColor>& PixelArray)
-{
-	//See .h deprecation msg
-	return false;
-	 
-	/*
-	if(!T2D) 
-	{
-		return false;
-	}
-	
-	//To prevent overflow in BP if used in a loop
-	PixelArray.Empty();
-	
-	T2D->SRGB = false;
-	T2D->CompressionSettings = TC_VectorDisplacementmap;
-	
-	//Update settings
-	T2D->UpdateResource();
-	 
-	FTexture2DMipMap& MyMipMap 	= T2D->PlatformData->Mips[0];
-	TextureWidth = MyMipMap.SizeX;
-	TextureHeight = MyMipMap.SizeY;
-	 
-	FByteBulkData* RawImageData 	= &MyMipMap.BulkData;
-	
-	if(!RawImageData) 
-	{
-		return false;
-	}
-	
-	//Cast issue here, need to resolve
-	FColor* RawColorArray = static_cast<FColor*>(RawImageData->Lock(LOCK_READ_ONLY));
-	
-	for(int32 x = 0; x < TextureWidth; x++)
-	{
-		for(int32 y = 0; y < TextureHeight; y++)   
-		{
-			PixelArray.Add(RawColorArray[x * TextureWidth + y]); 
-		}
-	}
-	  
-	RawImageData->Unlock();
-	return true;
-	*/
-}
 
 class UAudioComponent* UVictoryBPFunctionLibrary::PlaySoundAttachedFromFile(const FString& FilePath, class USceneComponent* AttachToComponent, FName AttachPointName, FVector Location, EAttachLocation::Type LocationType, bool bStopWhenAttachedToDestroyed, float VolumeMultiplier, float PitchMultiplier, float StartTime, class USoundAttenuation* AttenuationSettings)
 {	

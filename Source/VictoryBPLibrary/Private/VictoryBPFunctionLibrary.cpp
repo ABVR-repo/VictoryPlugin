@@ -4165,7 +4165,8 @@ UTexture2D* UVictoryBPFunctionLibrary::LoadTexture2D_FromDDSFile(const FString& 
 				/* Add new mip */
 				else
 				{
-					FTexture2DMipMap* Mip = new( Texture->PlatformData->Mips ) FTexture2DMipMap( );
+					FTexture2DMipMap* Mip = new(FTexture2DMipMap);
+					Texture->PlatformData->Mips.Add(Mip);
 					Mip->SizeX = CurrentWidth;
 					Mip->SizeY = CurrentHeight;
 
@@ -5372,32 +5373,32 @@ bool UVictoryBPFunctionLibrary::GenericArray_SortCompare(const FProperty* LeftPr
 {
 	bool bResult = false;
 
-	if (const FNumericProperty *LeftNumericProperty = Cast<const FNumericProperty>(LeftProperty))
+	if (const FNumericProperty *LeftNumericProperty = CastField<const FNumericProperty>(LeftProperty))
 	{
 		if (LeftNumericProperty->IsFloatingPoint())
 		{
-			bResult = (LeftNumericProperty->GetFloatingPointPropertyValue(LeftValuePtr) < Cast<const FNumericProperty>(RightProperty)->GetFloatingPointPropertyValue(RightValuePtr));
+			bResult = (LeftNumericProperty->GetFloatingPointPropertyValue(LeftValuePtr) < CastField<const FNumericProperty>(RightProperty)->GetFloatingPointPropertyValue(RightValuePtr));
 		}
 		else if (LeftNumericProperty->IsInteger())
 		{
-			bResult = (LeftNumericProperty->GetSignedIntPropertyValue(LeftValuePtr) < Cast<const FNumericProperty>(RightProperty)->GetSignedIntPropertyValue(RightValuePtr));
+			bResult = (LeftNumericProperty->GetSignedIntPropertyValue(LeftValuePtr) < CastField<const FNumericProperty>(RightProperty)->GetSignedIntPropertyValue(RightValuePtr));
 		}
 	}
-	else if (const FBoolProperty* LeftBoolProperty = Cast<const FBoolProperty>(LeftProperty))
+	else if (const FBoolProperty* LeftBoolProperty = CastField<const FBoolProperty>(LeftProperty))
 	{
-		bResult = (!LeftBoolProperty->GetPropertyValue(LeftValuePtr) && Cast<const FBoolProperty>(RightProperty)->GetPropertyValue(RightValuePtr));
+		bResult = (!LeftBoolProperty->GetPropertyValue(LeftValuePtr) && CastField<const FBoolProperty>(RightProperty)->GetPropertyValue(RightValuePtr));
 	}
-	else if (const FNameProperty* LeftNameProperty = Cast<const FNameProperty>(LeftProperty))
+	else if (const FNameProperty* LeftNameProperty = CastField<const FNameProperty>(LeftProperty))
 	{
-		bResult = (LeftNameProperty->GetPropertyValue(LeftValuePtr).ToString() < Cast<const FNameProperty>(RightProperty)->GetPropertyValue(RightValuePtr).ToString());
+		bResult = (LeftNameProperty->GetPropertyValue(LeftValuePtr).ToString() < CastField<const FNameProperty>(RightProperty)->GetPropertyValue(RightValuePtr).ToString());
 	}
-	else if (const FStrProperty* LeftStringProperty = Cast<const FStrProperty>(LeftProperty))
+	else if (const FStrProperty* LeftStringProperty = CastField<const FStrProperty>(LeftProperty))
 	{
-		bResult = (LeftStringProperty->GetPropertyValue(LeftValuePtr) < Cast<const FStrProperty>(RightProperty)->GetPropertyValue(RightValuePtr));
+		bResult = (LeftStringProperty->GetPropertyValue(LeftValuePtr) < CastField<const FStrProperty>(RightProperty)->GetPropertyValue(RightValuePtr));
 	}
-	else if (const FTextProperty* LeftTextProperty = Cast<const FTextProperty>(LeftProperty))
+	else if (const FTextProperty* LeftTextProperty = CastField<const FTextProperty>(LeftProperty))
 	{
-		bResult = (LeftTextProperty->GetPropertyValue(LeftValuePtr).ToString() < Cast<const FTextProperty>(RightProperty)->GetPropertyValue(RightValuePtr).ToString());
+		bResult = (LeftTextProperty->GetPropertyValue(LeftValuePtr).ToString() < CastField<const FTextProperty>(RightProperty)->GetPropertyValue(RightValuePtr).ToString());
 	}
 
 	return bResult;
@@ -5410,7 +5411,7 @@ void UVictoryBPFunctionLibrary::GenericArray_Sort(void* TargetArray, const FArra
 		FScriptArrayHelper ArrayHelper(ArrayProp, TargetArray);
 		const int32 LastIndex = ArrayHelper.Num();
 
-		if (const FObjectProperty* ObjectProperty = Cast<const FObjectProperty>(ArrayProp->Inner))
+		if (const FObjectProperty* ObjectProperty = CastField<const FObjectProperty>(ArrayProp->Inner))
 		{
 			for (int32 i = 0; i < LastIndex; ++i)
 			{
@@ -5419,8 +5420,8 @@ void UVictoryBPFunctionLibrary::GenericArray_Sort(void* TargetArray, const FArra
 					UObject* LeftObject = ObjectProperty->GetObjectPropertyValue(ArrayHelper.GetRawPtr(j));
 					UObject* RightObject = ObjectProperty->GetObjectPropertyValue(ArrayHelper.GetRawPtr(j + 1));
 
-					FProperty* LeftProperty = FindField<FProperty>(LeftObject->GetClass(), VariableName);
-					FProperty* RightProperty = FindField<FProperty>(RightObject->GetClass(), VariableName);
+					FProperty* LeftProperty = FindFProperty<FProperty>(LeftObject->GetClass(), VariableName);
+					FProperty* RightProperty = FindFProperty<FProperty>(RightObject->GetClass(), VariableName);
 						
 					if (LeftProperty && RightProperty)
 					{
@@ -5439,9 +5440,9 @@ void UVictoryBPFunctionLibrary::GenericArray_Sort(void* TargetArray, const FArra
 		{
 			FProperty* Property = nullptr;
 
-			if (const FStructProperty* StructProperty = Cast<const FStructProperty>(ArrayProp->Inner))
+			if (const FStructProperty* StructProperty = CastField<const FStructProperty>(ArrayProp->Inner))
 			{
-				Property = FindField<FProperty>(StructProperty->Struct, VariableName);
+				Property = FindFProperty<FProperty>(StructProperty->Struct, VariableName);
 			}
 			else
 			{
